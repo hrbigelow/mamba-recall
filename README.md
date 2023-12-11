@@ -1,6 +1,6 @@
 # Experiments with Mamba State Space Models
 
-Experiments with the Mamba model from [Dau and
+Experiments with the Mamba model from [Dao and
 Gu](https://arxiv.org/pdf/2312.00752.pdf) using their
 [implementation](https://github.com/state-spaces/mamba)
 

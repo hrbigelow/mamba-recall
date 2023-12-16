@@ -1,0 +1,80 @@
+loss:
+  name_pattern: loss 
+  figure_kwargs:
+    title: 
+      text: Loss 
+      text_font_size: 24px
+    xaxis:
+      axis_label: SGD Steps
+      axis_label_text_font_size: 24px
+      major_label_text_font_size: 24px
+    yaxis:
+      axis_label: Cross Entropy
+      axis_label_text_font_size: 24px
+      major_label_text_font_size: 24px
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+  color:
+    palette: Viridis10
+    formula: name 
+
+delta:
+  name_pattern: delta-len.*-layer.*
+  figure_kwargs:
+    title: 
+      text: Delta
+    xaxis:
+      axis_label: Time 
+    yaxis:
+      axis_label: Delta value
+
+  color:
+    palette: Viridis256
+    formula: index
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+
+delta_mean:
+  name_pattern: delta-mean-len.*-layer.*
+  figure_kwargs:
+    title: 
+      text: Delta Mean
+    xaxis:
+      axis_label: Time 
+    yaxis:
+      axis_label: Delta Mean over Examples
+
+  color:
+    palette: Viridis
+    formula: index
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+
+delta_adjusted:
+  name_pattern: delta-adj-len.*-layer.*
+  figure_kwargs:
+    title: 
+      text: Delta
+    xaxis:
+      axis_label: Time from first Induction Token
+    yaxis:
+      axis_label: Delta value
+
+  color:
+    palette: Viridis256
+    formula: index
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+

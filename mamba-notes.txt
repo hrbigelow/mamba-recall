@@ -1,0 +1,110 @@
+mamba_simple.py
+
+y^2  *   *   *   *   *   *   *   *   *   *   *
+                 |
+h^2  *   *   *---*   *   *   *   *   *   *   *
+                 |
+y^1  *   *   *   *   *   *   *   *   *   *   *
+                 |
+h^1  *   *   *---*   *   *   *   *   *   *   *
+                 |
+x    *   *   *   *   *   *   *   *   *   *   *
+
+
+During the recurrence, the h's from the previous timestep are used together
+with the y's from the current timestep but lower layer
+o
+
+h^s_l = f(h^s_{l-1}, y^{s-1}_l)
+y^s_l = g(h^s_l)
+
+So, we can decouple this by saying that the h's propagate horizontally,
+while the y's propagate vertically.  But, the propagations are dependent on each
+other.  The basic shape is:
+
+
+     *
+     ^
+     |
+     g
+     |
+*-f->*
+     ^
+     |
+     f
+     |
+     *
+
+Overall, the cycle of these is left-to-right, bottom-to-top.  All of the h and y at a
+given time step are populated before the next time step.  (Except, the x is
+pre-existing)
+
+
+So, how does this picture map onto the code?
+
+Dimension sizes:
+
+d_model  
+d_state   n
+d_conv    
+d_inner = int(expand * d_model)
+dt_rank = math..ceil(d_model / 16) if dt_rank == 'auto' else dt_rank
+
+
+sub-modules of class Mamba 
+
+in_proj = nn.Linear(in=d_model, out=d_inner*2)   # 65
+
+# This is a causal-conv due to the padding.  Also, groups=d_inner makes it depth-wise)
+conv1d = nn.Conv1d(in=d_inner, out=d_inner, kernel=d_conv, padding=d_conv-1, groups=d_inner)
+x_proj = nn.Linear(in=d_inner, out=dt_rank + d_state*2)
+dt_proj = nn.Linear(in=dt_rank, out=d_inner)
+out_proj = nn.Linear(in=d_inner, out=d_model)
+
+
+
+forward(hidden_states)
+# hidden_states: (B, L, D)
+# B=batch, L=seq_len, D=dim
+
+Line 138:
+xz = rearrange(
+    self.in_proj.weight @ rearrange(hidden_states, "b l d -> d (b l)"),
+    "d (b l) -> b d l",
+    l=seqlen,
+)
+
+This tells us that in_proj must be of shape (d*2, d_model) since it operates on a
+shape of d (b l).  It seems as though d_model = d here.
+
+What are `inference_params`?
+
+use_fast_path is commented as `Fused kernel options`
+
+The forward path, where inference_params is None:
+
+
+mamba_inner_fn:
+
+
+
+
+
+
+Overall, during training, how does the forward pass proceed?  Is it that each layer
+is unrolled across time, and then the next layer is computed that way?  Or, is the
+vertical block of states computed for all layers, and   
+
+
+Mamba::forward
+   MambaInnerFn::forward:  selective_scan_interface.py:216  
+   this is the use_fast_path and interface_params is None option:
+This is just before selective_scan_cuda.fwd is called, and where logging something
+about delta would be in order.  Note that delta here is before softplus is applied
+(the selective_scan_cuda applies the softplus function.
+
+Mamba:forward:  mamba_simple.py:189
+otherwise (not use_fast_path)
+This is just before selective_scan_fn is called.  Could also log delta here.
+
+

@@ -6,6 +6,7 @@ small = Hyperparams(
         train_len=256,
         n_vocab=16,
         prefix_len=10,
+        ind_pos=8,
         learn_rate=1e-3,
         d_model=64,
         n_epoch=1000,

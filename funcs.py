@@ -1,4 +1,4 @@
-from einops import rearrange
+import torch as t
 import torch.nn.functional as F
 
 class Writer:
@@ -41,6 +41,25 @@ class Writer:
         # group_name = group_fn('delta.adj')
         # here must truncate
         # self.logger.write(group_name, x=None, y=None)
+
+
+class Dump:
+    def __init__(self, out_stub):
+        self.out_stub = out_stub
+
+    def prepare(self, induction_pos, length_power):
+        self.induction_pos = induction_pos
+        self.length_power = length_power
+        self.write_count = 0
+
+    def write(self, delta, **kwargs):
+        """
+        delta: b d l
+        """
+        delta = F.softplus(delta).to('cpu')
+        out_file = self.out_stub.format(self.write_count, self.length_power)
+        t.save(delta, out_file)
+        self.write_count += 1
 
 
 

@@ -44,14 +44,52 @@ delta_mean:
   name_pattern: delta-mean-len.*-layer.*
   figure_kwargs:
     title: 
-      text: Delta Mean
+      text: Delta Mean over Examples
     xaxis:
       axis_label: Time 
     yaxis:
-      axis_label: Delta Mean over Examples
+      axis_label: Delta Values by Channel 
 
   color:
-    palette: Viridis
+    palette: Viridis256
+    formula: index
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+
+delta_batch:
+  name_pattern: delta-batch0-len.*-layer.*
+  figure_kwargs:
+    title: 
+      text: Delta from Batch Element 0
+    xaxis:
+      axis_label: Time 
+    yaxis:
+      axis_label: Delta Values by Channel
+
+  color:
+    palette: Viridis256
+    formula: index
+
+  glyph_kind: line
+  columns:
+    - x
+    - y
+
+delta_channel:
+  name_pattern: delta-channel0-len.*-layer.*
+  figure_kwargs:
+    title: 
+      text: Delta from Channel 0 
+    xaxis:
+      axis_label: Time 
+    yaxis:
+      axis_label: Delta Values by Batch Element 
+
+  color:
+    palette: Viridis256
     formula: index
 
   glyph_kind: line

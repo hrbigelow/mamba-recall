@@ -1,7 +1,7 @@
 import torch as t
 
 class InductionData:
-    def __init__(self, batch, n_vocab, seq_len, prefix_len):
+    def __init__(self, batch, n_vocab, seq_len, prefix_len, ind_pos=5):
         """
         Generates synthetic data of the form:
         ... S M .... S M
@@ -16,6 +16,7 @@ class InductionData:
         self.V = n_vocab
         self.L = seq_len # total sequence
         self.P = prefix_len # region where first induction token occurs
+        self.ind_pos = ind_pos
         self.vocab = list(range(self.V))
         self.ind_tok = self.V
 
@@ -26,7 +27,7 @@ class InductionData:
         mem = t.randint(0, self.V, (self.B,1))
         batch = t.randint(0, self.V, (self.B, self.L))
         # inds = t.randint(0, self.P, (self.B,1))
-        inds = t.full((self.B,1), 5)
+        inds = t.full((self.B,1), self.ind_pos)
         inds2 = t.full((self.B,1), self.L-2)
         batch.scatter_(1, inds, self.ind_tok)
         batch.scatter_(1, inds+1, mem)
